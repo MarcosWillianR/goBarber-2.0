@@ -52,6 +52,7 @@ class CreateAppointmentService {
 
     const isDateUnavailable = await this.appointmentsRepository.findByDate(
       appointmentDate,
+      provider_id,
     );
 
     if (isDateUnavailable) {

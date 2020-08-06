@@ -3,7 +3,7 @@ import { inject, injectable } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 
-import authConfig from '@config/auth';
+import authConfig, { IAuthConfig } from '@config/auth';
 
 import User from '../infra/typeorm/entities/User';
 
