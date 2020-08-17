@@ -18,7 +18,7 @@ export default {
   storage: diskStorage({
     destination: filesTmpDirectory,
     filename(req, file, callback) {
-      const randomHash = crypto.randomBytes(10).toString('HEX');
+      const randomHash = crypto.randomBytes(10).toString('hex');
       const filename = `${randomHash}${extname(file.originalname)}`;
 
       return callback(null, filename);

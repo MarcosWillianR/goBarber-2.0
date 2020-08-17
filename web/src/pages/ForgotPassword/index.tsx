@@ -1,61 +1,53 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { FiMail, FiUser, FiLock, FiArrowLeft } from 'react-icons/fi';
-import { FormHandles } from '@unform/core';
+import { FiLogIn, FiMail } from 'react-icons/fi';
 import { Form } from '@unform/web';
+import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
-import { Link, useHistory } from 'react-router-dom';
-
-import api from '../../services/apiClient';
-
-import getValidationErrors from '../../utils/getValidationErrors';
+import { Link } from 'react-router-dom';
 
 import { useToast } from '../../hooks/toast';
 
+import getValidationErrors from '../../utils/getValidationErrors';
 import logoImg from '../../assets/logo.svg';
 
 import { Container, AnimationContainer, Content, Background } from './styles';
 import { Input, Button } from '../../components/Form';
+import api from '../../services/apiClient';
 
-interface SignUpFormData {
-  name: string;
+interface ForgotPasswordFormData {
   email: string;
-  password: string;
 }
 
-const SignUp: React.FC = () => {
+const SignIn: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const formRef = useRef<FormHandles>(null);
-  const history = useHistory();
 
   const { addToast } = useToast();
 
   const handleSubmit = useCallback(
-    async (data: SignUpFormData) => {
+    async (data: ForgotPasswordFormData) => {
       try {
         setLoading(true);
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
-          name: Yup.string().required('Nome obrigatório'),
           email: Yup.string()
             .required('E-mail obrigatório')
             .email('Digite um e-mail válido'),
-          password: Yup.string().min(6, 'No mínimo 6 dígitos'),
         });
 
         await schema.validate(data, { abortEarly: false });
 
-        await api.post('/users', data);
-
-        addToast({
-          title: 'Cadastro realizado com sucesso!',
-          description: 'redirecionando para página de login em 3 segundos',
-          type: 'success',
+        await api.post('/password/forgot', {
+          email: data.email,
         });
 
-        setTimeout(() => {
-          history.push('/');
-        }, 3000);
+        addToast({
+          type: 'success',
+          title: 'E-mail de recuperação enviado',
+          description:
+            'Enviamos um e-mail para confirmar a recuperação de senha, cheque sua caixa de entrada.',
+        });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -66,50 +58,44 @@ const SignUp: React.FC = () => {
         }
 
         addToast({
-          title: 'Erro no cadastro',
+          title: 'Erro na Recuperação',
           type: 'error',
-          description: 'Aconteceu um erro ao fazer cadastro, tente novamente.',
+          description:
+            'Aconteceu um erro ao tentar recuperar sua senha, tente novamente.',
         });
       } finally {
         setLoading(false);
       }
     },
-    [addToast, history],
+    [addToast],
   );
 
   return (
     <Container>
-      <Background />
-
       <Content>
         <AnimationContainer>
           <img src={logoImg} alt="GoBarber" />
 
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <h1>Faça seu cadastro</h1>
+            <h1>Recuperação</h1>
 
-            <Input icon={FiUser} name="name" placeholder="Nome" />
             <Input icon={FiMail} name="email" placeholder="E-mail" />
-            <Input
-              icon={FiLock}
-              name="password"
-              type="password"
-              placeholder="Senha"
-            />
 
             <Button loading={loading} type="submit">
-              Cadastrar
+              Recuperar
             </Button>
           </Form>
 
           <Link to="/">
-            <FiArrowLeft />
-            Voltar para logon
+            <FiLogIn />
+            Entrar
           </Link>
         </AnimationContainer>
       </Content>
+
+      <Background />
     </Container>
   );
 };
 
-export default SignUp;
+export default SignIn;

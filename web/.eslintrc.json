@@ -28,12 +28,13 @@
     "import/no-duplicates": "off",
     "react/jsx-props-no-spreading": "off",
     "react/prop-types": "off",
+    "no-unused-expressions": "off",
+    "import/prefer-default-export": "off",
+    "@typescript-eslint/camelcase": "off",
     "prettier/prettier": "error",
     "react-hooks/rules-of-hooks": "error",
-    "no-unused-expressions": "off",
     "react-hooks/exhaustive-deps": "warn",
     "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
-    "import/prefer-default-export": "off",
     "@typescript-eslint/explicit-function-return-type": [
       "error",
       {
