@@ -16,6 +16,11 @@ import {
   ProfileButton,
   ProfileImage,
   NoImageProfile,
+  ProvidersList,
+  ProviderContainer,
+  ProviderImage,
+  ProviderImageContainer,
+  ProviderName,
 } from './styles';
 
 interface RouteParams {
@@ -74,6 +79,34 @@ const CreateAppointment: React.FC = () => {
           </ProfileButton>
         )}
       </Header>
+
+      <ProvidersList
+        data={providers}
+        keyExtractor={provider => provider.id}
+        horizontal
+        renderItem={({ item: provider }) => (
+          <ProviderContainer
+            isActive={provider.id === providerId}
+            onPress={() => setProviderId(provider.id)}
+          >
+            {provider.avatar_url ? (
+              <ProviderImage source={{ uri: provider.avatar_url }} />
+            ) : (
+              <ProviderImageContainer isActive={provider.id === providerId}>
+                <Icon
+                  name="user"
+                  size={18}
+                  color={provider.id === providerId ? '#3e3b47' : '#ff9000'}
+                />
+              </ProviderImageContainer>
+            )}
+
+            <ProviderName isActive={provider.id === providerId}>
+              {provider.name}
+            </ProviderName>
+          </ProviderContainer>
+        )}
+      />
     </Container>
   );
 };
