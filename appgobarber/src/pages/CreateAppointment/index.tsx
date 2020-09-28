@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
+import DatePicker from '@react-native-community/datetimepicker';
+import { Platform } from 'react-native';
 
 import api from '../../services/apiClient';
 
@@ -16,11 +18,16 @@ import {
   ProfileButton,
   ProfileImage,
   NoImageProfile,
+  ProvidersContainer,
   ProvidersList,
   ProviderContainer,
   ProviderImage,
   ProviderImageContainer,
   ProviderName,
+  Calendar,
+  Title,
+  OpenDatePickerButton,
+  OpenDatePickerButtonText,
 } from './styles';
 
 interface RouteParams {
@@ -28,7 +35,9 @@ interface RouteParams {
 }
 
 const CreateAppointment: React.FC = () => {
-  const [providerId, setProviderId] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedProvider, setSelectedProvider] = useState('');
   const [providers, setProviders] = useState<Providers[]>([]);
 
   const { params } = useRoute();
@@ -41,7 +50,7 @@ const CreateAppointment: React.FC = () => {
     const routeParams = params as RouteParams;
 
     if (routeParams.providerId) {
-      setProviderId(routeParams.providerId);
+      setSelectedProvider(routeParams.providerId);
     }
 
     api.get('providers').then(response => {
@@ -56,6 +65,27 @@ const CreateAppointment: React.FC = () => {
       setProviders(formattedProviders);
     });
   }, [params]);
+
+  useEffect(() => {
+    api.get(`providers/${selectedProvider}/day-availability`, {});
+  }, [selectedProvider, selectedDate]);
+
+  const handleToggleDatePicker = useCallback(() => {
+    setShowDatePicker(state => !state);
+  }, []);
+
+  const handleSelectedDate = useCallback(
+    (event: any, date: Date | undefined) => {
+      if (Platform.OS === 'android') {
+        setShowDatePicker(false);
+      }
+
+      if (date) {
+        setSelectedDate(date);
+      }
+    },
+    [],
+  );
 
   return (
     <Container>
@@ -80,33 +110,62 @@ const CreateAppointment: React.FC = () => {
         )}
       </Header>
 
-      <ProvidersList
-        data={providers}
-        keyExtractor={provider => provider.id}
-        horizontal
-        renderItem={({ item: provider }) => (
-          <ProviderContainer
-            isActive={provider.id === providerId}
-            onPress={() => setProviderId(provider.id)}
-          >
-            {provider.avatar_url ? (
-              <ProviderImage source={{ uri: provider.avatar_url }} />
-            ) : (
-              <ProviderImageContainer isActive={provider.id === providerId}>
-                <Icon
-                  name="user"
-                  size={18}
-                  color={provider.id === providerId ? '#3e3b47' : '#ff9000'}
-                />
-              </ProviderImageContainer>
-            )}
+      <ProvidersContainer>
+        <ProvidersList
+          data={providers}
+          keyExtractor={provider => provider.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item: provider }) => (
+            <ProviderContainer
+              isActive={provider.id === selectedProvider}
+              onPress={() => setSelectedProvider(provider.id)}
+            >
+              {provider.avatar_url ? (
+                <ProviderImage source={{ uri: provider.avatar_url }} />
+              ) : (
+                <ProviderImageContainer
+                  isActive={provider.id === selectedProvider}
+                >
+                  <Icon
+                    name="user"
+                    size={18}
+                    color={
+                      provider.id === selectedProvider ? '#3e3b47' : '#ff9000'
+                    }
+                  />
+                </ProviderImageContainer>
+              )}
 
-            <ProviderName isActive={provider.id === providerId}>
-              {provider.name}
-            </ProviderName>
-          </ProviderContainer>
+              <ProviderName isActive={provider.id === selectedProvider}>
+                {provider.name}
+              </ProviderName>
+            </ProviderContainer>
+          )}
+        />
+      </ProvidersContainer>
+
+      <Calendar>
+        <Title>
+          Escolha a data
+          {showDatePicker ? ' true' : ' false'}
+        </Title>
+
+        <OpenDatePickerButton onPress={handleToggleDatePicker}>
+          <OpenDatePickerButtonText>
+            Selecionar outra data
+          </OpenDatePickerButtonText>
+        </OpenDatePickerButton>
+
+        {showDatePicker && (
+          <DatePicker
+            mode="date"
+            display="calendar"
+            onChange={handleSelectedDate}
+            value={selectedDate}
+          />
         )}
-      />
+      </Calendar>
     </Container>
   );
 };
