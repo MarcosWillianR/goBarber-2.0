@@ -140,8 +140,8 @@ const CreateAppointment: React.FC = () => {
     } catch (err) {
       Alert.alert(
         'Erro ao criar agendamento',
-        'Ocorreu um erro ao tentar realizar o agendamento, tente novamente.'
-      )
+        'Ocorreu um erro ao tentar realizar o agendamento, tente novamente.',
+      );
     }
   }, [navigate, selectedDate, selectedHour, selectedProvider]);
 
