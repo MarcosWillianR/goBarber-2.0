@@ -46,11 +46,7 @@ const Dashboard: React.FC = () => {
   const { signOut, user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
-
-  const [monthAvailability, setMonthAvailability] = useState<
-    MonthAvailabilityItem[]
-  >([]);
-
+  const [monthAvailability, setMonthAvailability] = useState<MonthAvailabilityItem[]>([]);
   const [appointments, setAppointments] = useState<AppointmentsItem[]>([]);
 
   const handleDateChange = useCallback((date: Date, modifier: DayModifiers) => {
@@ -91,14 +87,12 @@ const Dashboard: React.FC = () => {
       });
   }, [selectedDate]);
 
-  const unavailableDays = useMemo(() => {
-    return monthAvailability
-      .filter(monthDay => monthDay.available === false)
-      .map(
-        ({ day }) =>
-          new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day),
-      );
-  }, [currentMonth, monthAvailability]);
+  const unavailableDays = useMemo(() => monthAvailability
+    .filter(monthDay => monthDay.available === false)
+    .map(({ day }) => new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth(), day
+    )), [currentMonth, monthAvailability]);
 
   const headerDayFormatted = useMemo(() => {
     const todayInText = format(selectedDate, "'Dia' dd 'de' MMMM", {
@@ -109,23 +103,18 @@ const Dashboard: React.FC = () => {
     return { todayInText, weekDayInText };
   }, [selectedDate]);
 
-  const morningAppointments: AppointmentsItem[] = useMemo(() => {
-    return appointments.filter(
-      appointment => parseISO(appointment.date).getHours() < 12,
-    );
-  }, [appointments]);
+  const morningAppointments: AppointmentsItem[] = useMemo(() =>
+    appointments.filter(
+      appointment => parseISO(appointment.date).getHours() < 12
+    ), [appointments]);
 
-  const afternoonAppointments: AppointmentsItem[] = useMemo(() => {
-    return appointments.filter(
+  const afternoonAppointments: AppointmentsItem[] = useMemo(() =>
+    appointments.filter(
       appointment => parseISO(appointment.date).getHours() >= 12,
-    );
-  }, [appointments]);
+    ), [appointments]);
 
   const nextAppointment: AppointmentsItem | undefined = useMemo(() => {
-    if (!appointments.length) {
-      return undefined;
-    }
-
+    if (!appointments.length) return undefined;
     return appointments.find(appointment =>
       isAfter(parseISO(appointment.date), new Date()),
     );
