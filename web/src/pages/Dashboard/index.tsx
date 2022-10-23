@@ -189,9 +189,7 @@ const Dashboard: React.FC = () => {
                     </span>
 
                     <div>
-                      <AppointmentUserAvatar
-                        url={appointment.user?.avatar_url || null}
-                      >
+                      <AppointmentUserAvatar url={appointment.user?.avatar_url || null}>
                         <FiUser />
                       </AppointmentUserAvatar>
 
@@ -209,22 +207,22 @@ const Dashboard: React.FC = () => {
             <strong>Tarde</strong>
 
             {afternoonAppointments.length ? (
-              afternoonAppointments.map(appointment => {
+              afternoonAppointments.map(ap => {
                 return (
                   <Appointment>
                     <span>
                       <FiClock />
-                      {appointment.hourFormatted}
+                      {ap.hourFormatted}
                     </span>
 
                     <div>
                       <AppointmentUserAvatar
-                        url={appointment.user?.avatar_url || null}
+                        url={ap.user?.avatar_url || null}
                       >
                         <FiUser />
                       </AppointmentUserAvatar>
 
-                      <strong>{appointment.user?.name}</strong>
+                      <strong>{ap.user?.name}</strong>
                     </div>
                   </Appointment>
                 );
