@@ -24,51 +24,38 @@ const SignIn: React.FC = () => {
 
   const { addToast } = useToast();
 
-  const handleSubmit = useCallback(
-    async (data: ForgotPasswordFormData) => {
-      try {
-        setLoading(true);
-        formRef.current?.setErrors({});
+  const handleSubmit = useCallback(async (data: ForgotPasswordFormData) => {
+    try {
+      setLoading(true);
+      formRef.current?.setErrors({});
+      const schema = Yup.object().shape({
+        email: Yup.string()
+          .required('E-mail obrigatório')
+          .email('Digite um e-mail válido'),
+      });
 
-        const schema = Yup.object().shape({
-          email: Yup.string()
-            .required('E-mail obrigatório')
-            .email('Digite um e-mail válido'),
-        });
+      await schema.validate(data, { abortEarly: false });
 
-        await schema.validate(data, { abortEarly: false });
+      await api.post('/password/forgot', {
+        email: data.email,
+      });
 
-        await api.post('/password/forgot', {
-          email: data.email,
-        });
-
-        addToast({
-          type: 'success',
-          title: 'E-mail de recuperação enviado',
-          description:
-            'Enviamos um e-mail para confirmar a recuperação de senha, cheque sua caixa de entrada.',
-        });
-      } catch (err) {
-        if (err instanceof Yup.ValidationError) {
-          const errors = getValidationErrors(err);
-
-          formRef.current?.setErrors(errors);
-
-          return;
-        }
-
-        addToast({
-          title: 'Erro na Recuperação',
-          type: 'error',
-          description:
-            'Aconteceu um erro ao tentar recuperar sua senha, tente novamente.',
-        });
-      } finally {
-        setLoading(false);
+      addToast({
+        type: 'success',
+        title: 'E-mail de recuperação enviado',
+        description:
+          'Enviamos um e-mail para confirmar a recuperação de senha, cheque sua caixa de entrada.',
+      });
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(err);
+        formRef.current?.setErrors(errors);
+        return;
       }
-    },
-    [addToast],
-  );
+    } finally {
+      setLoading(false);
+    }
+  }, [addToast]);
 
   return (
     <Container>
@@ -77,18 +64,18 @@ const SignIn: React.FC = () => {
           <img src={logoImg} alt="GoBarber" />
 
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <h1>Recuperação</h1>
+            <h1>Recovery</h1>
 
             <Input icon={FiMail} name="email" placeholder="E-mail" />
 
             <Button loading={loading} type="submit">
-              Recuperar
+              Recover
             </Button>
           </Form>
 
           <Link to="/">
             <FiLogIn />
-            Entrar
+            SignIn
           </Link>
         </AnimationContainer>
       </Content>
