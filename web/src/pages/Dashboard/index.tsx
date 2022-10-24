@@ -235,11 +235,11 @@ const Dashboard: React.FC = () => {
 
         <Calendar>
           <DayPicker
-            weekdaysShort={['D', 'S', 'T', 'Q', 'Q', 'S', 'S']}
-            disabledDays={[{ daysOfWeek: [0, 6] }, ...unavailableDays]}
+            weekdaysShort={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+            disabledDays={[{ daysOfWeek: [1, 6] }, ...unavailableDays]}
             modifiers={{
               available: {
-                daysOfWeek: [1, 2, 3, 4, 5],
+                daysOfWeek: [1, 2, 3, 4, 5, 6],
               },
             }}
             onDayClick={handleDateChange}
@@ -258,7 +258,6 @@ const Dashboard: React.FC = () => {
               'Setembro',
               'Outubro',
               'Novembro',
-              'Dezembro',
             ]}
           />
         </Calendar>
